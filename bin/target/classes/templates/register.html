@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - AI Resume Screening & Smart Candidate Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="d-flex align-items-center justify-content-center py-5">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                <div class="text-center mb-4">
+                    <h2 class="navbar-brand text-uppercase fw-bold fs-4">
+                        <span class="gradient-text">AI Resume Screening</span>
+                    </h2>
+                    <p class="text-secondary mt-1">Smart Candidate Management System</p>
+                </div>
+
+                <div class="glass-card p-4 p-sm-5">
+                    <h3 class="text-center mb-4 fw-bold">Student Registration</h3>
+
+                    <!-- Global Error Alert -->
+                    <div th:if="${globalError}" class="alert alert-custom-error mb-4" role="alert" th:text="${globalError}"></div>
+
+                    <form th:action="@{/register}" th:object="${student}" method="post">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" th:field="*{firstName}" 
+                                       th:errorclass="is-invalid" placeholder="First Name">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" th:field="*{lastName}" 
+                                       th:errorclass="is-invalid" placeholder="Last Name">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" th:field="*{username}" 
+                                   th:errorclass="is-invalid" placeholder="Choose a username">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                   th:errorclass="is-invalid" placeholder="Enter your email">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number (Optional)</label>
+                            <input type="text" class="form-control" id="phone" th:field="*{phone}" 
+                                   th:errorclass="is-invalid" placeholder="Enter your contact number">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                       th:errorclass="is-invalid" placeholder="Min 6 characters">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" 
+                                       th:errorclass="is-invalid" placeholder="Confirm password">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-secondary mb-0">Already registered? 
+                            <a th:href="@{/login}" class="text-decoration-none text-accent-hover fw-bold" style="color: var(--accent);">Sign In</a>
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

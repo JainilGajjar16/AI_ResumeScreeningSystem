@@ -1,0 +1,229 @@
+/* Custom CSS for AI Resume Screening & Smart Candidate Management System */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+    --card-bg: rgba(30, 41, 59, 0.45);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --accent: #d946ef;
+    --accent-hover: #c084fc;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --error: #f43f5e;
+    --success: #10b981;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Background blob decorations for premium look */
+body::before {
+    content: '';
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+    top: 10%;
+    left: 5%;
+    z-index: -1;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217, 70, 239, 0.12) 0%, rgba(0,0,0,0) 70%);
+    bottom: 10%;
+    right: 5%;
+    z-index: -1;
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    box-shadow: 0 16px 50px 0 rgba(99, 102, 241, 0.15);
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Form Controls with Cyberpunk styling */
+.form-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+    color: var(--text-primary);
+}
+
+/* Validation styling */
+.is-invalid {
+    border-color: var(--error) !important;
+}
+
+.invalid-feedback {
+    color: var(--error);
+    font-size: 0.825rem;
+    margin-top: 0.35rem;
+    font-weight: 500;
+}
+
+/* Premium Button Styling */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.btn-accent {
+    background: linear-gradient(135deg, var(--accent) 0%, #c026d3 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3);
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, #c026d3 0%, #a21caf 100%);
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 20px rgba(217, 70, 239, 0.45);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+/* Alert styles matching theme */
+.alert-custom-error {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: #fda4af;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.alert-custom-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+/* Navigation & Header elements */
+.navbar-brand {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--text-primary);
+}
+
+/* Dashboard layouts */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.dashboard-stat-card {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-val {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.logout-link {
+    color: var(--error);
+    font-weight: 600;
+}
+
+.logout-link:hover {
+    color: #fda4af;
+}
