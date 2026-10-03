@@ -9,18 +9,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.resume.screening.entity.StudentProfile;
+import com.resume.screening.repository.StudentProfileRepository;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final RecruiterRepository recruiterRepository;
+    private final StudentProfileRepository studentProfileRepository;
+    private final com.resume.screening.repository.SkillRepository skillRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(UserRepository userRepository, 
                            RecruiterRepository recruiterRepository, 
+                           StudentProfileRepository studentProfileRepository,
+                           com.resume.screening.repository.SkillRepository skillRepository,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.recruiterRepository = recruiterRepository;
+        this.studentProfileRepository = studentProfileRepository;
+        this.skillRepository = skillRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -59,6 +68,40 @@ public class DataInitializer implements CommandLineRunner {
                     .designation("Talent Acquisition Manager")
                     .build();
             recruiterRepository.save(recruiterProfile);
+        }
+
+        // Seed default Student if not exists
+        if (!userRepository.existsByUsername("student")) {
+            User studentUser = User.builder()
+                    .username("student")
+                    .password(passwordEncoder.encode("student123"))
+                    .email("student@example.com")
+                    .role("STUDENT")
+                    .firstName("John")
+                    .lastName("Student")
+                    .build();
+            userRepository.save(studentUser);
+
+            StudentProfile studentProfile = StudentProfile.builder()
+                    .user(studentUser)
+                    .phone("9876543210")
+                    .build();
+            studentProfileRepository.save(studentProfile);
+        }
+
+        // Seed default Skills if table is empty
+        if (skillRepository.count() == 0) {
+            String[] initialSkills = {
+                "Java", "Python", "JavaScript", "HTML", "CSS", "Bootstrap", "Spring Boot",
+                "Spring", "MySQL", "SQL", "MongoDB", "Git", "GitHub", "React", "Angular",
+                "Flutter", "Dart", "PHP", "C", "C++", "C#", ".NET", "REST API", "AWS",
+                "Docker", "Linux", "Machine Learning", "Data Science"
+            };
+            for (String skillName : initialSkills) {
+                if (!skillRepository.existsByNameIgnoreCase(skillName)) {
+                    skillRepository.save(com.resume.screening.entity.Skill.builder().name(skillName).build());
+                }
+            }
         }
     }
 }

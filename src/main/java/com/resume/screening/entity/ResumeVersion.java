@@ -28,6 +28,18 @@ public class ResumeVersion {
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
+    @Column(name = "original_file_name")
+    private String originalFileName;
+
+    @Column(name = "stored_file_name")
+    private String storedFileName;
+
+    @Column(name = "file_type", length = 50)
+    private String fileType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
     @Column(name = "commit_message")
     private String commitMessage;
 

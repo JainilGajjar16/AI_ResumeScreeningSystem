@@ -1,0 +1,55 @@
+{
+  "verification_status": "PASSED",
+  "timestamp": "2026-10-03T18:54:00",
+  "reproducibility": {
+    "metadata_test_accuracy": 0.9900990099009901,
+    "recalculated_test_accuracy": 0.9900990099009901,
+    "accuracy_discrepancy": 0.0,
+    "metadata_test_macro_f1": 0.9897435897435898,
+    "recalculated_test_macro_f1": 0.9897435897435898,
+    "macro_f1_discrepancy": 0.0,
+    "is_exact_match": true
+  },
+  "feature_integrity": {
+    "expected_feature_count": 23,
+    "verified_feature_count": 23,
+    "identifier_leakage": false,
+    "target_leakage": false,
+    "excluded_columns_verified": [
+      "pair_id",
+      "resume_id",
+      "job_id",
+      "label",
+      "label_encoded"
+    ]
+  },
+  "split_integrity": {
+    "train_val_overlap": 0,
+    "train_test_overlap": 0,
+    "val_test_overlap": 0
+  },
+  "dataset_duplicates": {
+    "duplicate_pair_ids": 0,
+    "duplicate_resume_job_pairs": 0
+  },
+  "per_class_metrics": {
+    "LOW": {
+      "precision": 1.0,
+      "recall": 0.9830508474576272,
+      "f1_score": 0.9914529914529915,
+      "support": 59
+    },
+    "MEDIUM": {
+      "precision": 0.9565217391304348,
+      "recall": 1.0,
+      "f1_score": 0.9777777777777777,
+      "support": 22
+    },
+    "HIGH": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 20
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "model_name": "Random Forest",
+  "random_seed": 42,
+  "created_at": "2026-10-03T18:36:59.145777",
+  "feature_columns": [
+    "tfidf_cosine_similarity",
+    "resume_skill_count",
+    "job_skill_count",
+    "matching_skill_count",
+    "missing_skill_count",
+    "skill_jaccard_similarity",
+    "skill_coverage_ratio",
+    "resume_has_experience",
+    "resume_has_education",
+    "resume_has_projects",
+    "resume_has_skills",
+    "resume_has_certifications",
+    "job_has_experience",
+    "job_has_education",
+    "job_has_projects",
+    "job_has_skills",
+    "job_has_certifications",
+    "section_match_score",
+    "resume_char_count",
+    "job_char_count",
+    "resume_word_count",
+    "job_word_count",
+    "word_count_ratio"
+  ],
+  "num_features": 23,
+  "target_mapping": {
+    "0": "LOW",
+    "1": "MEDIUM",
+    "2": "HIGH"
+  },
+  "label_names": [
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+  ],
+  "dataset_split_counts": {
+    "train": 477,
+    "val": 97,
+    "test": 101,
+    "total": 675
+  },
+  "validation_metrics": {
+    "accuracy": 0.9896907216494846,
+    "macro_f1": 0.9883611467693624,
+    "per_class": {
+      "LOW": {
+        "precision": 0.9791666666666666,
+        "recall": 1.0,
+        "f1-score": 0.9894736842105263,
+        "support": 47.0
+      },
+      "MEDIUM": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 29.0
+      },
+      "HIGH": {
+        "precision": 1.0,
+        "recall": 0.9523809523809523,
+        "f1-score": 0.975609756097561,
+        "support": 21.0
+      }
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.9900990099009901,
+    "macro_f1": 0.9897435897435898,
+    "per_class": {
+      "LOW": {
+        "precision": 1.0,
+        "recall": 0.9830508474576272,
+        "f1-score": 0.9914529914529915,
+        "support": 59.0
+      },
+      "MEDIUM": {
+        "precision": 0.9565217391304348,
+        "recall": 1.0,
+        "f1-score": 0.9777777777777777,
+        "support": 22.0
+      },
+      "HIGH": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 20.0
+      }
+    }
+  }
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Recommendations & Ranking - AI Resume Screening</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/recruiter/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/recruiter/jobs}">My Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/shortlisted}">Shortlisted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/interviews}">Interviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs/create}">Create Job</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <a th:href="@{/recruiter/jobs}" class="text-secondary text-decoration-none">← Back to My Jobs</a>
+            <a th:href="@{/recruiter/shortlisted}" class="btn btn-outline-warning btn-sm">⭐ View All Shortlisted Candidates</a>
+        </div>
+
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div>
+                    <h2 class="fw-bold text-white mb-1">Ranked Applicants for <span class="text-accent" th:text="${job != null ? job.title : 'Job'}">Job Title</span></h2>
+                    <p class="text-secondary mb-0">Total Applicants: <strong class="text-white" th:text="${#lists.size(recommendations != null ? recommendations : applicants)}">0</strong> | Ranked by existing ATS Score</p>
+                </div>
+                <div class="mt-3 mt-md-0 d-flex gap-2" th:if="${job != null and job.id != null}">
+                    <a th:href="@{/recruiter/jobs/{id}(id=${job.id})}" class="btn btn-outline-light btn-sm">Job Details</a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(recommendations != null ? recommendations : applicants)}" class="glass-card p-5 text-center">
+            <h4 class="text-white mb-2">No Applications Submitted Yet</h4>
+            <p class="text-secondary mb-0">No candidates have applied for this job posting yet.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(recommendations != null ? recommendations : applicants)}" class="glass-card p-4">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                    <thead>
+                        <tr class="text-secondary border-bottom">
+                            <th>Rank</th>
+                            <th>Candidate</th>
+                            <th>ATS Score</th>
+                            <th>Recommendation</th>
+                            <th>Skills</th>
+                            <th>Qualification</th>
+                            <th>Experience</th>
+                            <th>Shortlist</th>
+                            <th>Final Decision</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cand, stat : ${recommendations != null ? recommendations : applicants}">
+                            <td>
+                                <span class="badge bg-dark border text-secondary fs-6" th:text="${'#' + (stat.index + 1)}">#1</span>
+                            </td>
+                            <td>
+                                <strong class="text-white d-block" th:text="${cand.studentName != null ? cand.studentName : 'Candidate'}">John Student</strong>
+                                <small class="text-secondary" th:text="${cand.studentEmail != null ? cand.studentEmail : ''}">email@example.com</small>
+                            </td>
+                            <td>
+                                <div th:if="${cand.hasAtsAnalysis != null and cand.hasAtsAnalysis and cand.atsScore != null}">
+                                    <span class="fs-5 fw-bold text-accent" th:text="${cand.formattedAtsScore}">89.0%</span>
+                                </div>
+                                <div th:if="${cand.hasAtsAnalysis == null or !cand.hasAtsAnalysis or cand.atsScore == null}">
+                                    <span class="badge bg-secondary text-wrap" style="max-width: 140px;">ATS Analysis Not Available</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge px-3 py-2" th:classappend="${cand.recommendationBadgeClass != null ? cand.recommendationBadgeClass : 'bg-secondary'}" th:text="${cand.recommendationLabel != null ? cand.recommendationLabel : 'ATS Analysis Not Available'}">Highly Compatible</span>
+                            </td>
+                            <td>
+                                <div th:if="${cand.hasAtsAnalysis != null and cand.hasAtsAnalysis and cand.atsScore != null}">
+                                    <span class="badge bg-info text-dark mb-1" th:text="${cand.formattedSkillMatch != null ? 'Match: ' + cand.formattedSkillMatch : 'N/A'}">Match: 80%</span>
+                                    <div th:if="${cand.matchedSkills != null and !cand.matchedSkills.isEmpty()}" class="small text-success text-truncate" style="max-width: 150px;">
+                                        ✓ <span th:text="${#strings.listJoin(cand.matchedSkills, ', ')}">Java</span>
+                                    </div>
+                                </div>
+                                <div th:if="${cand.hasAtsAnalysis == null or !cand.hasAtsAnalysis or cand.atsScore == null}">
+                                    <span class="text-secondary small" th:text="${cand.studentSkills != null ? cand.studentSkills : 'N/A'}">Skills</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${cand.qualificationMatch != null}" th:class="${cand.qualificationMatch == 'MATCH' ? 'badge bg-success' : (cand.qualificationMatch == 'PARTIAL_MATCH' ? 'badge bg-warning text-dark' : 'badge bg-secondary')}" th:text="${cand.qualificationMatch}">MATCH</span>
+                                <span th:if="${cand.qualificationMatch == null}" class="text-secondary small">N/A</span>
+                            </td>
+                            <td>
+                                <span th:if="${cand.experienceMatch != null}" th:class="${cand.experienceMatch == 'MATCH' ? 'badge bg-success' : (cand.experienceMatch == 'PARTIAL_MATCH' ? 'badge bg-warning text-dark' : 'badge bg-secondary')}" th:text="${cand.experienceMatch}">MATCH</span>
+                                <span th:if="${cand.experienceMatch == null}" class="text-secondary small">N/A</span>
+                            </td>
+                            <td>
+                                <div th:if="${cand.isShortlisted != null and cand.isShortlisted and cand.studentProfileId != null and job != null and job.id != null}">
+                                    <form th:action="@{/recruiter/jobs/{jobId}/unshortlist/{studentId}(jobId=${job.id}, studentId=${cand.studentProfileId})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-success fw-bold">
+                                            ✓ Shortlisted
+                                        </button>
+                                    </form>
+                                </div>
+                                <div th:if="${(cand.isShortlisted == null or !cand.isShortlisted) and cand.studentProfileId != null and job != null and job.id != null}">
+                                    <form th:action="@{/recruiter/jobs/{jobId}/shortlist/{studentId}(jobId=${job.id}, studentId=${cand.studentProfileId})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                                            + Shortlist
+                                        </button>
+                                    </form>
+                                </div>
+                                <div th:if="${cand.studentProfileId == null}">
+                                    <span class="text-secondary small">N/A</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${cand.finalDecision == null or cand.finalDecision.name() == 'PENDING'}" class="badge bg-secondary">PENDING</span>
+                                <span th:if="${cand.finalDecision != null and cand.finalDecision.name() == 'SELECTED'}" class="badge bg-success fw-bold">SELECTED</span>
+                                <span th:if="${cand.finalDecision != null and cand.finalDecision.name() == 'REJECTED'}" class="badge bg-danger">REJECTED</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a th:if="${cand.studentProfileId != null}" th:href="@{/recruiter/candidate/{id}(id=${cand.studentProfileId})}" class="btn btn-sm btn-primary">Profile</a>
+                                    <a th:if="${cand.resumeId != null and job != null and job.id != null}" th:href="@{/recruiter/jobs/{jobId}/analysis/{resumeId}(jobId=${job.id}, resumeId=${cand.resumeId})}" class="btn btn-sm btn-accent">ATS Report</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Job - AI Resume Screening System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/recruiter/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/recruiter/jobs}">My Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/shortlisted}">Shortlisted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/interviews}">Interviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs/create}">Create Job</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <!-- Error message -->
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="glass-card p-4 p-md-5">
+                    <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold text-white mb-1">Edit Job Posting</h2>
+                            <p class="text-secondary mb-0">Update details for <strong class="text-accent" th:text="${job.title}">Job Title</strong></p>
+                        </div>
+                        <span th:if="${job.status == 'PUBLISHED'}" class="badge bg-success fs-6">PUBLISHED</span>
+                        <span th:if="${job.status == 'DRAFT'}" class="badge bg-warning text-dark fs-6">DRAFT</span>
+                        <span th:if="${job.status == 'CLOSED'}" class="badge bg-danger fs-6">CLOSED</span>
+                    </div>
+
+                    <form th:action="@{/recruiter/jobs/update/{id}(id=${job.id})}" th:object="${job}" method="post">
+
+                        <div class="row g-3">
+                            <!-- Job Title -->
+                            <div class="col-md-6 mb-3">
+                                <label for="title" class="form-label text-white fw-bold">Job Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                            </div>
+
+                            <!-- Company Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="companyName" class="form-label text-white fw-bold">Company Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="companyName" th:field="*{companyName}" required>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="col-md-4 mb-3">
+                                <label for="location" class="form-label text-white fw-bold">Location <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="location" th:field="*{location}" required>
+                            </div>
+
+                            <!-- Employment Type -->
+                            <div class="col-md-4 mb-3">
+                                <label for="jobType" class="form-label text-white fw-bold">Employment Type <span class="text-danger">*</span></label>
+                                <select class="form-select" id="jobType" th:field="*{jobType}" required>
+                                    <option value="Full Time">Full Time</option>
+                                    <option value="Part Time">Part Time</option>
+                                    <option value="Internship">Internship</option>
+                                    <option value="Contract">Contract</option>
+                                </select>
+                            </div>
+
+                            <!-- Application Deadline -->
+                            <div class="col-md-4 mb-3">
+                                <label for="deadline" class="form-label text-white fw-bold">Application Deadline <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="deadline" th:field="*{deadline}" required>
+                            </div>
+
+                            <!-- Required Skills -->
+                            <div class="col-md-6 mb-3">
+                                <label for="requiredSkills" class="form-label text-white fw-bold">Required Skills <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="requiredSkills" th:field="*{requiredSkills}" required>
+                            </div>
+
+                            <!-- Qualification -->
+                            <div class="col-md-6 mb-3">
+                                <label for="qualification" class="form-label text-white fw-bold">Qualification <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="qualification" th:field="*{qualification}" required>
+                            </div>
+
+                            <!-- Experience Required -->
+                            <div class="col-md-6 mb-3">
+                                <label for="experienceRequired" class="form-label text-white fw-bold">Experience Required</label>
+                                <input type="text" class="form-control" id="experienceRequired" th:field="*{experienceRequired}">
+                            </div>
+
+                            <!-- Salary Range -->
+                            <div class="col-md-6 mb-3">
+                                <label for="salaryRange" class="form-label text-white fw-bold">Salary Range</label>
+                                <input type="text" class="form-control" id="salaryRange" th:field="*{salaryRange}">
+                            </div>
+
+                            <!-- Job Status -->
+                            <div class="col-md-12 mb-3">
+                                <label for="status" class="form-label text-white fw-bold">Job Status</label>
+                                <select class="form-select" id="status" th:field="*{status}">
+                                    <option value="DRAFT">DRAFT (Hidden from candidates)</option>
+                                    <option value="PUBLISHED">PUBLISHED (Active for candidates)</option>
+                                    <option value="CLOSED">CLOSED (Disabled for new applications)</option>
+                                </select>
+                            </div>
+
+                            <!-- Job Description -->
+                            <div class="col-12 mb-4">
+                                <label for="description" class="form-label text-white fw-bold">Job Description <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="6" required></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+                            <a th:href="@{/recruiter/jobs}" class="btn btn-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5">Update Job</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

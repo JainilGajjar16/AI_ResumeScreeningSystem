@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.resume.screening.service.Module8FinalCandidateSelectionTests
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.346 s -- in com.resume.screening.service.Module8FinalCandidateSelectionTests

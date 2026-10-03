@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details - AI Resume Screening System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg border-bottom"
+        style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/recruiter/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/recruiter/jobs}">My Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/shortlisted}">Shortlisted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/interviews}">Interviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs/create}">Create Job</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <!-- Success Alert -->
+        <div th:if="${successMessage}" class="alert alert-custom-success mb-4 alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}">Operation successful!</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Error Alert -->
+        <div th:if="${errorMessage}" class="alert alert-custom-error mb-4 alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}">An error occurred.</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <div class="mb-3">
+                    <a th:href="@{/recruiter/jobs}" class="text-secondary text-decoration-none">← Back to My Jobs</a>
+                </div>
+
+                <div class="glass-card p-4 p-md-5 mb-4">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 border-bottom pb-4">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <h2 class="fw-bold text-white mb-0" th:text="${job.title}">Job Title</h2>
+                                <span th:if="${job.status == 'PUBLISHED'}" class="badge bg-success">PUBLISHED</span>
+                                <span th:if="${job.status == 'DRAFT'}" class="badge bg-warning text-dark">DRAFT</span>
+                                <span th:if="${job.status == 'CLOSED'}" class="badge bg-danger">CLOSED</span>
+                            </div>
+                            <h4 class="text-accent mb-0" th:text="${job.companyName}">Company Name</h4>
+                        </div>
+                        <div class="mt-3 mt-md-0 d-flex flex-wrap gap-2">
+                            <form th:action="@{/recruiter/jobs/{id}/parse(id=${job.id})}" method="post"
+                                class="d-inline">
+                                <button type="submit" class="btn btn-success d-inline-flex align-items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-cpu" viewBox="0 0 16 16">
+                                        <path
+                                            d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h.5A1.5 1.5 0 0 1 14 3.5V4h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v.5a1.5 1.5 0 0 1-1.5 1.5H12v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-.5A1.5 1.5 0 0 1 2 12.5V12H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2V4H.5a.5.5 0 0 1 0-1H2v-.5A1.5 1.5 0 0 1 3.5 2H4V.5A.5.5 0 0 1 4.5 0zM3.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-9zM5 5h6v6H5V5z" />
+                                    </svg>
+                                    <span
+                                        th:text="${parsedJob != null ? 'Re-Parse Job Requirements' : 'Parse Job Requirements'}">Parse
+                                        Job Requirements</span>
+                                </button>
+                            </form>
+                            <a th:href="@{/recruiter/jobs/{id}/applicants(id=${job.id})}"
+                                class="btn btn-info text-dark fw-bold">
+                                View Applicants (<span th:text="${job.applicationCount}">0</span>)
+                            </a>
+                            <a th:href="@{/recruiter/jobs/edit/{id}(id=${job.id})}" class="btn btn-outline-warning">Edit
+                                Job</a>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <span class="text-secondary d-block small">Location</span>
+                            <strong class="text-white fs-6" th:text="${job.location}">Location</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary d-block small">Employment Type</span>
+                            <strong class="text-white fs-6" th:text="${job.jobType}">Full Time</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary d-block small">Application Deadline</span>
+                            <strong class="text-white fs-6" th:text="${job.formattedDeadline}">31/12/2026</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary d-block small">Qualification</span>
+                            <strong class="text-white fs-6" th:text="${job.qualification}">Degree</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary d-block small">Experience Required</span>
+                            <strong class="text-white fs-6" th:text="${job.experienceRequired}">Experience</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary d-block small">Salary Range</span>
+                            <strong class="text-white fs-6" th:text="${job.salaryRange}">Salary</strong>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-white border-bottom pb-2 mb-3">Required Skills</h5>
+                        <div th:if="${job.requiredSkills != null and !#strings.isEmpty(job.requiredSkills)}"
+                            class="d-flex flex-wrap gap-2">
+                            <span th:each="skill : ${#strings.arraySplit(job.requiredSkills, ',')}"
+                                class="badge bg-secondary px-3 py-2 fs-6" th:text="${#strings.trim(skill)}">Skill</span>
+                        </div>
+                        <p th:if="${job.requiredSkills == null or #strings.isEmpty(job.requiredSkills)}"
+                            class="text-secondary">Not specified.</p>
+                    </div>
+
+                    <div>
+                        <h5 class="fw-bold text-white border-bottom pb-2 mb-3">Job Description</h5>
+                        <div class="text-white lh-lg style-preserve-whitespace" style="white-space: pre-line;"
+                            th:text="${job.description}">
+                            Detailed description text goes here...
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Structured Parsed Job Requirements Card -->
+                <div class="glass-card p-4 p-md-5 mb-4" th:if="${parsedJob != null}">
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-4">
+                        <div>
+                            <h4 class="fw-bold gradient-text mb-1">Structured Job Requirements</h4>
+                            <p class="text-secondary small mb-0">Extracted metadata ready for Module 6 AI Screening &
+                                Candidate Ranking</p>
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <span class="badge bg-success px-3 py-2 fs-6"
+                                th:text="'Status: ' + ${parsedJob.parsingStatus}">PARSED</span>
+                            <small class="text-secondary ms-2" th:if="${parsedJob.formattedParsedAt != null}"
+                                th:text="'Parsed on: ' + ${parsedJob.formattedParsedAt}"></small>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Parsed Skills -->
+                        <div class="col-12">
+                            <h6 class="fw-bold text-accent mb-2">Extracted Required Skills</h6>
+                            <div th:if="${parsedJob.requiredSkills != null and !parsedJob.requiredSkills.isEmpty()}"
+                                class="d-flex flex-wrap gap-2">
+                                <span th:each="sk : ${parsedJob.requiredSkills}" class="badge bg-primary px-3 py-2 fs-6"
+                                    th:text="${sk}">Java</span>
+                            </div>
+                            <p th:if="${parsedJob.requiredSkills == null or parsedJob.requiredSkills.isEmpty()}"
+                                class="text-secondary small">No specific technical skills extracted.</p>
+                        </div>
+
+                        <!-- Qualification & Experience -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded border border-secondary border-opacity-25 bg-dark">
+                                <h6 class="fw-bold text-accent mb-2">Qualification Requirement</h6>
+                                <p class="text-white small mb-0" th:text="${parsedJob.qualification}">Degree</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="p-3 rounded border border-secondary border-opacity-25 bg-dark">
+                                <h6 class="fw-bold text-accent mb-2">Experience Requirement</h6>
+                                <p class="text-white small mb-0" th:text="${parsedJob.experience}">Experience</p>
+                            </div>
+                        </div>
+
+                        <!-- Keywords -->
+                        <div class="col-12" th:if="${parsedJob.keywords != null and !parsedJob.keywords.isEmpty()}">
+                            <h6 class="fw-bold text-accent mb-2">Job Keywords</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span th:each="kw : ${parsedJob.keywords}"
+                                    class="badge bg-outline-info text-info border border-info px-2 py-1 small"
+                                    th:text="${kw}">Keyword</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

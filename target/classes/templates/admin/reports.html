@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruitment Reports & Pipeline Analytics - Admin Control Center</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/admin/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/students}">Students</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/recruiters}">Recruiters</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/jobs}">Jobs</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/applications}">Applications</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/admin/reports}">Reports</a></li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <span class="text-secondary me-2 d-block d-lg-inline">Welcome, <strong class="text-white" th:text="${fullName}">Admin</strong></span>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div>
+                            <h2 class="fw-bold mb-1 text-white">System Activity & Recruitment Reports</h2>
+                            <p class="text-secondary mb-0">Live performance reports, candidate funnel analytics, job performance, and recruiter activity metrics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. RECRUITMENT SUMMARY -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-white">Recruitment Summary</h4>
+                    <div class="row text-center g-3">
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Total Jobs</span>
+                                <span class="gradient-text fs-3 fw-bold" th:text="${reports.recruitmentSummary.totalJobs}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Total Applications</span>
+                                <span class="text-light fs-3 fw-bold" th:text="${reports.recruitmentSummary.totalApplications}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Total Shortlisted</span>
+                                <span class="text-primary fs-3 fw-bold" th:text="${reports.recruitmentSummary.totalShortlisted}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Total Interviews</span>
+                                <span class="text-info fs-3 fw-bold" th:text="${reports.recruitmentSummary.totalInterviews}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Completed Interviews</span>
+                                <span class="text-success fs-3 fw-bold" th:text="${reports.recruitmentSummary.completedInterviews}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Interview Selected Results</span>
+                                <span class="text-accent fs-3 fw-bold" th:text="${reports.recruitmentSummary.selectedInterviewResults}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Interview Rejected Results</span>
+                                <span class="text-danger fs-3 fw-bold" th:text="${reports.recruitmentSummary.rejectedInterviewResults}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 border border-secondary border-opacity-25 rounded-3">
+                                <span class="text-secondary d-block small">Pending Final Decisions</span>
+                                <span class="text-warning fs-3 fw-bold" th:text="${reports.recruitmentSummary.pendingFinalDecisions}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="p-3 border border-success border-opacity-50 bg-success bg-opacity-10 rounded-3">
+                                <span class="text-success d-block small fw-bold">FINAL SELECTED CANDIDATES</span>
+                                <span class="text-success fs-2 fw-bold" th:text="${reports.recruitmentSummary.finalSelected}">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="p-3 border border-danger border-opacity-50 bg-danger bg-opacity-10 rounded-3">
+                                <span class="text-danger d-block small fw-bold">FINAL REJECTED CANDIDATES</span>
+                                <span class="text-danger fs-2 fw-bold" th:text="${reports.recruitmentSummary.finalRejected}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CANDIDATE PIPELINE -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-4 text-white">Candidate Recruitment Pipeline</h4>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center text-center g-3">
+                        <div class="p-3 border border-info rounded-3 flex-fill m-1">
+                            <span class="text-secondary d-block small">Applications</span>
+                            <div class="fs-2 fw-bold text-white" th:text="${reports.candidatePipeline.applicationsCount}">0</div>
+                        </div>
+                        <div class="fs-3 text-secondary d-none d-md-block">&rarr;</div>
+                        <div class="p-3 border border-primary rounded-3 flex-fill m-1">
+                            <span class="text-secondary d-block small">Shortlisted</span>
+                            <div class="fs-2 fw-bold text-primary" th:text="${reports.candidatePipeline.shortlistedCount}">0</div>
+                        </div>
+                        <div class="fs-3 text-secondary d-none d-md-block">&rarr;</div>
+                        <div class="p-3 border border-warning rounded-3 flex-fill m-1">
+                            <span class="text-secondary d-block small">Interviewed</span>
+                            <div class="fs-2 fw-bold text-warning" th:text="${reports.candidatePipeline.interviewedCount}">0</div>
+                        </div>
+                        <div class="fs-3 text-secondary d-none d-md-block">&rarr;</div>
+                        <div class="p-3 border border-accent rounded-3 flex-fill m-1">
+                            <span class="text-secondary d-block small">Interview Selected</span>
+                            <div class="fs-2 fw-bold text-accent" th:text="${reports.candidatePipeline.interviewSelectedCount}">0</div>
+                        </div>
+                        <div class="fs-3 text-secondary d-none d-md-block">&rarr;</div>
+                        <div class="p-3 border border-success rounded-3 flex-fill m-1 bg-success bg-opacity-10">
+                            <span class="text-success d-block small fw-bold">Final Selected</span>
+                            <div class="fs-2 fw-bold text-success" th:text="${reports.candidatePipeline.finalSelectedCount}">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. JOB-WISE SUMMARY -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-white">Job-wise Performance Summary</h4>
+                    <div th:if="${#lists.isEmpty(reports.jobSummaries)}" class="text-center py-4 text-secondary">
+                        <p class="mb-0">No job postings available for report generation.</p>
+                    </div>
+                    <div th:if="${!#lists.isEmpty(reports.jobSummaries)}" class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                            <thead>
+                                <tr class="text-secondary border-bottom">
+                                    <th>Job Title</th>
+                                    <th>Recruiter / Company</th>
+                                    <th>Apps</th>
+                                    <th>Shortlisted</th>
+                                    <th>Interviews</th>
+                                    <th>Completed</th>
+                                    <th>Int Selected</th>
+                                    <th>Final Selected</th>
+                                    <th>Final Rejected</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="js : ${reports.jobSummaries}">
+                                    <td><strong class="text-white" th:text="${js.jobTitle}">Job Title</strong></td>
+                                    <td>
+                                        <span class="d-block text-white" th:text="${js.recruiterName}">Recruiter</span>
+                                        <small class="text-secondary" th:text="${js.companyName}">Company</small>
+                                    </td>
+                                    <td><span class="badge bg-primary" th:text="${js.applicationsCount}">0</span></td>
+                                    <td><span class="badge bg-info text-dark" th:text="${js.shortlistedCount}">0</span></td>
+                                    <td><span class="badge bg-warning text-dark" th:text="${js.interviewsCount}">0</span></td>
+                                    <td><span class="badge bg-secondary" th:text="${js.completedInterviewsCount}">0</span></td>
+                                    <td><span class="badge bg-accent" th:text="${js.interviewSelectedCount}">0</span></td>
+                                    <td><span class="badge bg-success" th:text="${js.finalSelectedCount}">0</span></td>
+                                    <td><span class="badge bg-danger" th:text="${js.finalRejectedCount}">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. RECRUITER-WISE SUMMARY -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-white">Recruiter Activity Summary</h4>
+                    <div th:if="${#lists.isEmpty(reports.recruiterSummaries)}" class="text-center py-4 text-secondary">
+                        <p class="mb-0">No recruiters available for report generation.</p>
+                    </div>
+                    <div th:if="${!#lists.isEmpty(reports.recruiterSummaries)}" class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                            <thead>
+                                <tr class="text-secondary border-bottom">
+                                    <th>Recruiter Name</th>
+                                    <th>Company</th>
+                                    <th>Jobs Posted</th>
+                                    <th>Applications</th>
+                                    <th>Interviews</th>
+                                    <th>Completed Interviews</th>
+                                    <th>Final Selected</th>
+                                    <th>Final Rejected</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="rs : ${reports.recruiterSummaries}">
+                                    <td><strong class="text-white" th:text="${rs.recruiterName}">Recruiter Name</strong></td>
+                                    <td th:text="${rs.companyName}">Company</td>
+                                    <td><span class="badge bg-primary" th:text="${rs.jobsCount}">0</span></td>
+                                    <td><span class="badge bg-info text-dark" th:text="${rs.applicationsCount}">0</span></td>
+                                    <td><span class="badge bg-warning text-dark" th:text="${rs.interviewsCount}">0</span></td>
+                                    <td><span class="badge bg-secondary" th:text="${rs.completedInterviewsCount}">0</span></td>
+                                    <td><span class="badge bg-success" th:text="${rs.finalSelectedCount}">0</span></td>
+                                    <td><span class="badge bg-danger" th:text="${rs.finalRejectedCount}">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

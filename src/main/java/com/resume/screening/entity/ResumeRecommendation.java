@@ -24,7 +24,7 @@ public class ResumeRecommendation {
     private JobPost jobPost;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resume_id", nullable = false)
+    @JoinColumn(name = "resume_id", nullable = true)
     private Resume resume;
 
     @Column(name = "match_percentage", nullable = false, precision = 5, scale = 2)

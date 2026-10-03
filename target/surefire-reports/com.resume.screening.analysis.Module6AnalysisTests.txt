@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.resume.screening.analysis.Module6AnalysisTests
+-------------------------------------------------------------------------------
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.461 s -- in com.resume.screening.analysis.Module6AnalysisTests

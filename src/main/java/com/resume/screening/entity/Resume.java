@@ -12,8 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"studentProfile", "versions", "aiAnalysis"})
-@EqualsAndHashCode(exclude = {"studentProfile", "versions", "aiAnalysis"})
+@ToString(exclude = {"studentProfile", "versions", "aiAnalysis", "parsedResume"})
+@EqualsAndHashCode(exclude = {"studentProfile", "versions", "aiAnalysis", "parsedResume"})
 public class Resume {
 
     @Id
@@ -30,8 +30,29 @@ public class Resume {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
+    @Column(name = "original_file_name")
+    private String originalFileName;
+
+    @Column(name = "stored_file_name")
+    private String storedFileName;
+
     @Column(name = "file_type", length = 50)
     private String fileType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Builder.Default
+    @Column(name = "current_version")
+    private Integer currentVersion = 1;
+
+    @Builder.Default
+    @Column(name = "status", length = 30)
+    private String status = "Uploaded";
+
+    @Builder.Default
+    @Column(name = "is_current")
+    private Boolean isCurrent = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -45,6 +66,9 @@ public class Resume {
 
     @OneToOne(mappedBy = "resume", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private AiAnalysis aiAnalysis;
+
+    @OneToOne(mappedBy = "resume", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private ParsedResume parsedResume;
 
     @PrePersist
     protected void onCreate() {

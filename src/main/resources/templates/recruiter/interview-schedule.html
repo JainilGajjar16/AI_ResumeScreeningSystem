@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Interview - Recruiter</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/recruiter/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs}">My Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/shortlisted}">Shortlisted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/recruiter/interviews}">Interviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs/create}">Create Job</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-white mb-1">Schedule Interview</h2>
+                <p class="text-secondary mb-0">Schedule an interview round for a shortlisted candidate.</p>
+            </div>
+            <a th:href="@{/recruiter/interviews}" class="btn btn-outline-light">Back to Interviews</a>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Auto-selected Candidate & Job Card -->
+                <div class="glass-card p-4 mb-4" th:if="${candidateName != null}">
+                    <h5 class="fw-bold text-white mb-3">Selected Applicant</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <span class="text-secondary d-block small">Candidate Name</span>
+                            <strong class="fs-5 text-white" th:text="${candidateName}">Kashish Tank</strong>
+                            <small class="text-secondary d-block" th:if="${candidateEmail}" th:text="${candidateEmail}">email@example.com</small>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <span class="text-secondary d-block small">Target Job</span>
+                            <strong class="fs-5 text-accent" th:text="${jobTitle}">Java Software Engineer</strong>
+                            <span class="text-secondary d-block small" th:if="${companyName}" th:text="${companyName}">Company</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4">
+                    <form th:action="@{/recruiter/interviews/schedule}" th:object="${interviewRequest}" method="post">
+                        <input type="hidden" th:field="*{jobApplicationId}" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Interview Round Name</label>
+                            <input type="text" class="form-control" th:field="*{roundName}" placeholder="e.g. Technical Round 1" required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Interview Date</label>
+                                <input type="date" class="form-control" th:field="*{interviewDate}" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Interview Time</label>
+                                <input type="time" class="form-control" th:field="*{interviewTime}" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Interview Type</label>
+                            <select class="form-select bg-dark text-white border-secondary" id="interviewType" th:field="*{interviewType}" onchange="toggleInterviewTypeFields()" required>
+                                <option value="ONLINE">ONLINE</option>
+                                <option value="OFFLINE">OFFLINE</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="meetingLinkGroup">
+                            <label class="form-label">Meeting Link (for ONLINE)</label>
+                            <input type="url" class="form-control" id="meetingLink" th:field="*{meetingLink}" placeholder="https://meet.google.com/abc-defg-hij" />
+                        </div>
+
+                        <div class="mb-3" id="locationGroup" style="display: none;">
+                            <label class="form-label">Location (for OFFLINE)</label>
+                            <input type="text" class="form-control" id="location" th:field="*{location}" placeholder="e.g. Corporate Office, Room 402" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Notes / Instructions</label>
+                            <textarea class="form-control" th:field="*{notes}" rows="3" placeholder="Additional notes or topics for candidate..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Schedule Interview</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Client-Side JS for Online/Offline fields -->
+    <script>
+        function toggleInterviewTypeFields() {
+            var typeSelect = document.getElementById('interviewType');
+            var meetingLinkGroup = document.getElementById('meetingLinkGroup');
+            var locationGroup = document.getElementById('locationGroup');
+            var meetingLinkInput = document.getElementById('meetingLink');
+            var locationInput = document.getElementById('location');
+
+            if (!typeSelect) return;
+
+            if (typeSelect.value === 'ONLINE') {
+                meetingLinkGroup.style.display = 'block';
+                locationGroup.style.display = 'none';
+                meetingLinkInput.setAttribute('required', 'required');
+                locationInput.removeAttribute('required');
+            } else if (typeSelect.value === 'OFFLINE') {
+                meetingLinkGroup.style.display = 'none';
+                locationGroup.style.display = 'block';
+                locationInput.setAttribute('required', 'required');
+                meetingLinkInput.removeAttribute('required');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', toggleInterviewTypeFields);
+    </script>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

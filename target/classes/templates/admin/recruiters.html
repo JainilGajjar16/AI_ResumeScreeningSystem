@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Management - Admin Control Center</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/admin/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/students}">Students</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/admin/recruiters}">Recruiters</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/jobs}">Jobs</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/applications}">Applications</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/reports}">Reports</a></li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <span class="text-secondary me-2 d-block d-lg-inline">Welcome, <strong class="text-white" th:text="${fullName}">Admin</strong></span>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div>
+                            <h2 class="fw-bold mb-1 text-white">Recruiter Directory</h2>
+                            <p class="text-secondary mb-0">Audit corporate recruiter profiles, company listings, and hiring throughput.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter / Search Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-3">
+                    <form th:action="@{/admin/recruiters}" method="get" class="row g-3 align-items-center">
+                        <div class="col-md-9">
+                            <input type="text" name="query" class="form-control" placeholder="Search recruiters by name, email, or company..." th:value="${query}">
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                            <a th:href="@{/admin/recruiters}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recruiters Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <div th:if="${#lists.isEmpty(recruiters)}" class="text-center py-4 text-secondary">
+                        <p class="mb-0">No recruiter accounts found matching criteria.</p>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(recruiters)}" class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                            <thead>
+                                <tr class="text-secondary border-bottom">
+                                    <th>Recruiter Name</th>
+                                    <th>Email</th>
+                                    <th>Company</th>
+                                    <th>Designation</th>
+                                    <th>Jobs Posted</th>
+                                    <th>Apps Received</th>
+                                    <th>Interviews</th>
+                                    <th>Selected Candidates</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="recruiter : ${recruiters}">
+                                    <td>
+                                        <strong class="text-white d-block" th:text="${recruiter.recruiterName}">Jane Doe</strong>
+                                    </td>
+                                    <td th:text="${recruiter.email}">recruiter@example.com</td>
+                                    <td>
+                                        <strong class="text-accent" th:text="${recruiter.companyName}">AI Solutions Inc.</strong>
+                                    </td>
+                                    <td th:text="${recruiter.designation}">Talent Manager</td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${recruiter.jobsPosted}">0</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-dark" th:text="${recruiter.applicationsReceived}">0</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark" th:text="${recruiter.interviewsConducted}">0</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success" th:text="${recruiter.selectedCandidates}">0</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

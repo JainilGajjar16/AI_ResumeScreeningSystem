@@ -1,0 +1,74 @@
+[
+  {
+    "case_id": "CASE_1_HIGH",
+    "case_name": "Clear HIGH Match",
+    "expected_label": "HIGH",
+    "predicted_label": "HIGH",
+    "prediction_code": 2,
+    "match_status": "MATCH",
+    "probabilities": {
+      "LOW": 0.1258,
+      "MEDIUM": 0.0142,
+      "HIGH": 0.86
+    },
+    "extracted_features": {
+      "tfidf_cosine_similarity": 0.6499,
+      "skill_coverage_ratio": 0.9167,
+      "matching_skill_count": 11,
+      "missing_skill_count": 1,
+      "skill_jaccard_similarity": 0.6875,
+      "resume_skill_count": 15,
+      "job_skill_count": 12,
+      "section_match_score": 3,
+      "word_count_ratio": 1.3451
+    }
+  },
+  {
+    "case_id": "CASE_2_MEDIUM",
+    "case_name": "Genuine MEDIUM Partial Match",
+    "expected_label": "MEDIUM",
+    "predicted_label": "LOW",
+    "prediction_code": 0,
+    "match_status": "MISMATCH",
+    "probabilities": {
+      "LOW": 0.592,
+      "MEDIUM": 0.178,
+      "HIGH": 0.23
+    },
+    "extracted_features": {
+      "tfidf_cosine_similarity": 0.4153,
+      "skill_coverage_ratio": 0.3333,
+      "matching_skill_count": 4,
+      "missing_skill_count": 8,
+      "skill_jaccard_similarity": 0.25,
+      "resume_skill_count": 8,
+      "job_skill_count": 12,
+      "section_match_score": 3,
+      "word_count_ratio": 1.0845
+    }
+  },
+  {
+    "case_id": "CASE_3_LOW",
+    "case_name": "Clear LOW Match",
+    "expected_label": "LOW",
+    "predicted_label": "LOW",
+    "prediction_code": 0,
+    "match_status": "MATCH",
+    "probabilities": {
+      "LOW": 0.79,
+      "MEDIUM": 0.13,
+      "HIGH": 0.08
+    },
+    "extracted_features": {
+      "tfidf_cosine_similarity": 0.2136,
+      "skill_coverage_ratio": 0.0,
+      "matching_skill_count": 0,
+      "missing_skill_count": 12,
+      "skill_jaccard_similarity": 0.0,
+      "resume_skill_count": 0,
+      "job_skill_count": 12,
+      "section_match_score": 3,
+      "word_count_ratio": 1.1972
+    }
+  }
+]

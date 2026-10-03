@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Jobs - AI Resume Screening System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container-fluid px-lg-4">
+            <a class="navbar-brand text-uppercase fw-bold text-nowrap me-3" th:href="@{/student/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center text-nowrap gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-nowrap" th:href="@{/student/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-nowrap" th:href="@{/student/profile}">My Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-nowrap" th:href="@{/student/resume}">My Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-nowrap" th:href="@{/student/ats-analysis}">ATS Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-nowrap" th:href="@{/student/jobs}">Available Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-nowrap" th:href="@{/student/applications}">Job Applications</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-nowrap" th:href="@{/student/interviews}">My Interviews</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0 text-nowrap">
+                        <a class="nav-link logout-link fw-bold text-nowrap" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="mb-4">
+            <h2 class="fw-bold text-white mb-1">Available Job Openings</h2>
+            <p class="text-secondary mb-0">Browse published jobs from recruiters and apply directly with your uploaded resume.</p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(jobs)}" class="glass-card p-5 text-center">
+            <h4 class="text-white mb-2">No Active Job Postings</h4>
+            <p class="text-secondary mb-0">There are currently no active job postings available. Please check back later!</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(jobs)}" class="row">
+            <div th:each="job : ${jobs}" class="col-lg-6 mb-4">
+                <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h4 class="fw-bold text-white mb-0" th:text="${job.title}">Job Title</h4>
+                            <span class="badge bg-primary" th:text="${job.jobType}">Full Time</span>
+                        </div>
+                        <h6 class="text-accent mb-3" th:text="${job.companyName}">Company Name</h6>
+
+                        <div class="row text-secondary small mb-3">
+                            <div class="col-6 mb-2">
+                                <span>📍 Location: </span>
+                                <strong class="text-white" th:text="${job.location}">Location</strong>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span>📅 Deadline: </span>
+                                <strong class="text-white" th:text="${job.formattedDeadline}">31/12/2026</strong>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <span>🎓 Qualification: </span>
+                                <strong class="text-white" th:text="${job.qualification}">Degree</strong>
+                            </div>
+                            <div class="col-6 mb-2" th:if="${job.salaryRange != null and !#strings.isEmpty(job.salaryRange)}">
+                                <span>💰 Salary: </span>
+                                <strong class="text-white" th:text="${job.salaryRange}">Salary</strong>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-secondary small d-block mb-1">Required Skills:</span>
+                            <div th:if="${job.requiredSkills != null and !#strings.isEmpty(job.requiredSkills)}" class="d-flex flex-wrap gap-1">
+                                <span th:each="skill : ${#strings.arraySplit(job.requiredSkills, ',')}" 
+                                      class="badge bg-secondary text-white" th:text="${#strings.trim(skill)}">Skill</span>
+                            </div>
+                            <span th:if="${job.requiredSkills == null or #strings.isEmpty(job.requiredSkills)}" class="text-secondary small">Not specified</span>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3 mt-3 d-flex justify-content-end">
+                        <a th:href="@{/student/jobs/{id}(id=${job.id})}" class="btn btn-primary btn-sm px-4">View Details & Apply</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

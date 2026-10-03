@@ -1,0 +1,10 @@
+,Pred_LOW,Pred_MEDIUM,Pred_HIGH,Model
+Actual_LOW,46,1,0,Logistic Regression
+Actual_MEDIUM,0,29,0,Logistic Regression
+Actual_HIGH,1,0,20,Logistic Regression
+Actual_LOW,47,0,0,Random Forest
+Actual_MEDIUM,0,29,0,Random Forest
+Actual_HIGH,1,0,20,Random Forest
+Actual_LOW,47,0,0,XGBoost
+Actual_MEDIUM,0,29,0,XGBoost
+Actual_HIGH,1,0,20,XGBoost

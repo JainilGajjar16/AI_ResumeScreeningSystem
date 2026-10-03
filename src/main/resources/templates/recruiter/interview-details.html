@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Details - Recruiter</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/recruiter/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs}">My Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/shortlisted}">Shortlisted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/recruiter/interviews}">Interviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter/jobs/create}">Create Job</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" th:if="${fullName}">
+                        <span class="text-secondary me-2 d-block d-lg-inline">Welcome, <strong class="text-white" th:text="${fullName}">Recruiter</strong></span>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" th:if="${fullName == null}">
+                        <span class="text-secondary me-2 d-block d-lg-inline" sec:authorize="isAuthenticated()">Welcome, <strong class="text-white" sec:authentication="name">Recruiter</strong></span>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Interview Details</h2>
+                <p class="text-secondary mb-0">View and manage interview information.</p>
+            </div>
+            <a th:href="@{/recruiter/interviews}" class="btn btn-outline-light">Back to Interviews</a>
+        </div>
+
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="glass-card p-4" th:if="${interview != null}">
+            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-3 mb-4">
+                <div>
+                    <span class="text-secondary small text-uppercase fw-bold">Interview Round</span>
+                    <h3 class="fw-bold text-white mb-0" th:text="${interview.roundName}">Technical Round 1</h3>
+                </div>
+                <div class="mt-2 mt-sm-0 d-flex gap-2 align-items-center">
+                    <!-- Status Badge -->
+                    <span th:if="${interview.status.name() == 'SCHEDULED'}" class="badge bg-primary fs-6 px-3 py-2">SCHEDULED</span>
+                    <span th:if="${interview.status.name() == 'COMPLETED'}" class="badge bg-success fs-6 px-3 py-2">COMPLETED</span>
+                    <span th:if="${interview.status.name() == 'CANCELLED'}" class="badge bg-danger fs-6 px-3 py-2">CANCELLED</span>
+                    <span th:if="${interview.status.name() == 'RESCHEDULED'}" class="badge bg-warning text-dark fs-6 px-3 py-2">RESCHEDULED</span>
+
+                    <!-- Result Badge -->
+                    <span th:if="${interview.result != null and interview.result.name() == 'PENDING'}" class="badge bg-secondary fs-6 px-3 py-2">RESULT: PENDING</span>
+                    <span th:if="${interview.result != null and interview.result.name() == 'SELECTED'}" class="badge bg-success fs-6 px-3 py-2">RESULT: SELECTED</span>
+                    <span th:if="${interview.result != null and interview.result.name() == 'REJECTED'}" class="badge bg-danger fs-6 px-3 py-2">RESULT: REJECTED</span>
+                    <span th:if="${interview.result != null and interview.result.name() == 'ON_HOLD'}" class="badge bg-warning text-dark fs-6 px-3 py-2">RESULT: ON HOLD</span>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="text-secondary d-block small">Candidate Name</span>
+                        <strong class="fs-5 text-white" th:text="${interview.studentName}">Candidate Name</strong>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-secondary d-block small">Email</span>
+                        <span class="text-white" th:text="${interview.studentEmail}">candidate@example.com</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-secondary d-block small">Target Job</span>
+                        <strong class="fs-5 text-accent" th:text="${interview.jobTitle}">Java Software Engineer</strong>
+                        <span class="text-secondary d-block small" th:if="${interview.companyName}" th:text="${interview.companyName}">Company</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <span class="text-secondary d-block small">Date</span>
+                        <strong class="fs-5 text-white" th:text="${interview.formattedInterviewDate}">22/09/2026</strong>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-secondary d-block small">Time</span>
+                        <strong class="fs-5 text-white" th:text="${interview.formattedInterviewTime}">12:30 PM</strong>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-secondary d-block small">Type</span>
+                        <span class="badge bg-info text-dark px-3 py-2 fw-bold" th:text="${interview.interviewType}">OFFLINE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Meeting Link or Location Row -->
+            <div class="mb-4" th:if="${interview.interviewType.name() == 'ONLINE' and interview.meetingLink != null and !#strings.isEmpty(interview.meetingLink)}">
+                <span class="text-secondary d-block small mb-1">Meeting Link</span>
+                <div class="p-3 rounded border border-info border-opacity-25" style="background: rgba(15, 23, 42, 0.5);">
+                    <a th:href="${interview.meetingLink}" target="_blank" class="text-info text-break fw-bold text-decoration-underline" th:text="${interview.meetingLink}">https://meet.google.com/abc-defg-hij</a>
+                </div>
+            </div>
+
+            <div class="mb-4" th:if="${interview.interviewType.name() == 'OFFLINE' and interview.location != null and !#strings.isEmpty(interview.location)}">
+                <span class="text-secondary d-block small mb-1">Location</span>
+                <div class="p-3 rounded border border-secondary border-opacity-25" style="background: rgba(15, 23, 42, 0.5);">
+                    <span class="text-white fs-6" th:text="${interview.location}">Ahmedabad</span>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="mb-4" th:if="${interview.notes != null and !#strings.isEmpty(interview.notes)}">
+                <span class="text-secondary d-block small mb-1">Notes / Instructions</span>
+                <div class="p-3 rounded border border-secondary border-opacity-25 text-white" style="background: rgba(15, 23, 42, 0.5); white-space: pre-line;" th:text="${interview.notes}">
+                    PLS COME IN FORMAL
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex flex-wrap gap-2 pt-3 border-top border-secondary border-opacity-25">
+                <a th:href="@{/recruiter/interviews}" class="btn btn-secondary">Back to Interviews</a>
+
+                <form th:if="${interview.status.name() == 'SCHEDULED' or interview.status.name() == 'RESCHEDULED'}"
+                      th:action="@{'/recruiter/interviews/' + ${interview.id} + '/complete'}" method="post"
+                      onsubmit="return confirm('Mark this interview as COMPLETED?');">
+                    <button type="submit" class="btn btn-success fw-bold">Mark as Completed</button>
+                </form>
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editInterviewModal">
+                    Edit / Reschedule
+                </button>
+
+                <form th:if="${interview.status.name() != 'CANCELLED'}" th:action="@{'/recruiter/interviews/' + ${interview.id} + '/cancel'}" method="post" onsubmit="return confirm('Are you sure you want to cancel this interview?');">
+                    <button type="submit" class="btn btn-danger">Cancel Interview</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Interview Feedback & Result Card -->
+        <div class="glass-card p-4 mt-4" th:if="${interview != null}">
+            <h4 class="fw-bold text-white mb-3 border-bottom border-secondary border-opacity-25 pb-2">Interview Feedback & Result</h4>
+
+            <!-- If Status is COMPLETED -->
+            <div th:if="${interview.status.name() == 'COMPLETED'}">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <span class="text-secondary d-block small mb-1">Interview Outcome / Result</span>
+                        <span th:if="${interview.result != null and interview.result.name() == 'PENDING'}" class="badge bg-secondary fs-6 px-3 py-2">PENDING</span>
+                        <span th:if="${interview.result != null and interview.result.name() == 'SELECTED'}" class="badge bg-success fs-6 px-3 py-2">SELECTED</span>
+                        <span th:if="${interview.result != null and interview.result.name() == 'REJECTED'}" class="badge bg-danger fs-6 px-3 py-2">REJECTED</span>
+                        <span th:if="${interview.result != null and interview.result.name() == 'ON_HOLD'}" class="badge bg-warning text-dark fs-6 px-3 py-2">ON HOLD</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-secondary d-block small mb-1">Rating</span>
+                        <div class="fs-5 text-warning fw-bold">
+                            <span th:if="${interview.rating != null}">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <span th:text="${i <= interview.rating ? '★' : '☆'}">★</span>
+                                </span>
+                                <span class="text-white fs-6 ms-2" th:text="'(' + ${interview.rating} + ' / 5)'">(4 / 5)</span>
+                            </span>
+                            <span th:if="${interview.rating == null}" class="text-secondary fs-6">Not rated yet</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4" th:if="${interview.feedback != null and !#strings.isEmpty(interview.feedback)}">
+                    <span class="text-secondary d-block small mb-1">Recruiter Feedback / Remarks</span>
+                    <div class="p-3 rounded border border-secondary border-opacity-25 text-white" style="background: rgba(15, 23, 42, 0.5); white-space: pre-line;" th:text="${interview.feedback}">
+                        Candidate demonstrated strong skills.
+                    </div>
+                </div>
+
+                <!-- Feedback Submission / Edit Form -->
+                <div class="p-4 rounded border border-info border-opacity-25" style="background: rgba(15, 23, 42, 0.4);">
+                    <h5 class="fw-bold text-white mb-3" th:text="${interview.feedback != null ? 'Update Feedback & Result' : 'Record Interview Feedback & Result'}">Record Feedback</h5>
+                    <form th:action="@{'/recruiter/interviews/' + ${interview.id} + '/feedback'}" th:object="${feedbackRequest}" method="post">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Candidate Rating (1 to 5 Stars)</label>
+                                <select class="form-select bg-dark text-white border-secondary" th:field="*{rating}">
+                                    <option value="">-- Select Rating --</option>
+                                    <option value="1">1 - Poor</option>
+                                    <option value="2">2 - Fair</option>
+                                    <option value="3">3 - Good</option>
+                                    <option value="4">4 - Very Good</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Interview Result</label>
+                                <select class="form-select bg-dark text-white border-secondary" th:field="*{result}">
+                                    <option value="PENDING">PENDING</option>
+                                    <option value="SELECTED">SELECTED</option>
+                                    <option value="REJECTED">REJECTED</option>
+                                    <option value="ON_HOLD">ON_HOLD</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Feedback / Detailed Remarks</label>
+                            <textarea class="form-control" th:field="*{feedback}" rows="3" placeholder="Enter detailed interview feedback or notes..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-info fw-bold">Submit / Update Feedback</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- If Status is NOT COMPLETED -->
+            <div th:if="${interview.status.name() == 'SCHEDULED' or interview.status.name() == 'RESCHEDULED'}" class="p-3 rounded border border-warning border-opacity-25 text-warning" style="background: rgba(15, 23, 42, 0.4);">
+                Feedback and result can be recorded after marking this interview as <strong>COMPLETED</strong> using the "Mark as Completed" button above.
+            </div>
+
+            <div th:if="${interview.status.name() == 'CANCELLED'}" class="p-3 rounded border border-danger border-opacity-25 text-danger" style="background: rgba(15, 23, 42, 0.4);">
+                Feedback submission is disabled for cancelled interviews.
+            </div>
+        </div>
+
+        <!-- Final Hiring Decision Card -->
+        <div class="glass-card p-4 mt-4" th:if="${interview != null}">
+            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-2 mb-3">
+                <h4 class="fw-bold text-white mb-0">🏆 Final Hiring Decision</h4>
+                <div>
+                    <span th:if="${interview.finalDecision == null or interview.finalDecision.name() == 'PENDING'}" class="badge bg-secondary fs-6 px-3 py-2">FINAL DECISION: PENDING</span>
+                    <span th:if="${interview.finalDecision != null and interview.finalDecision.name() == 'SELECTED'}" class="badge bg-success fs-6 px-3 py-2">FINAL DECISION: SELECTED</span>
+                    <span th:if="${interview.finalDecision != null and interview.finalDecision.name() == 'REJECTED'}" class="badge bg-danger fs-6 px-3 py-2">FINAL DECISION: REJECTED</span>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <span class="text-secondary d-block small">Candidate</span>
+                    <strong class="text-white fs-6" th:text="${interview.studentName}">Candidate Name</strong>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-secondary d-block small">Interview Status</span>
+                    <span th:if="${interview.status.name() == 'COMPLETED'}" class="text-success fw-bold">COMPLETED</span>
+                    <span th:if="${interview.status.name() != 'COMPLETED'}" class="text-warning fw-bold" th:text="${interview.status}">SCHEDULED</span>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-secondary d-block small">Interview Result</span>
+                    <span th:if="${interview.result != null and interview.result.name() == 'SELECTED'}" class="text-success fw-bold">SELECTED</span>
+                    <span th:if="${interview.result != null and interview.result.name() != 'SELECTED'}" class="text-secondary fw-bold" th:text="${interview.result}">PENDING</span>
+                </div>
+            </div>
+
+            <!-- Recruiter Actions -->
+            <div th:if="${interview.status.name() == 'COMPLETED' and interview.result != null and interview.result.name() == 'SELECTED'}">
+                <div th:if="${interview.finalDecision == null or interview.finalDecision.name() == 'PENDING'}" class="p-3 rounded border border-success border-opacity-25 d-flex flex-wrap align-items-center justify-content-between gap-3" style="background: rgba(15, 23, 42, 0.4);">
+                    <div>
+                        <h6 class="fw-bold text-white mb-1">Make Final Selection</h6>
+                        <p class="text-secondary small mb-0">Candidate has completed the interview and is marked as SELECTED. You may now confirm the final candidate hiring decision.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <form th:action="@{'/recruiter/interviews/' + ${interview.id} + '/select-candidate'}" method="post" onsubmit="return confirm('Are you sure you want to SELECT this candidate for the final hiring decision?');">
+                            <button type="submit" class="btn btn-success fw-bold px-4">SELECT CANDIDATE</button>
+                        </form>
+                        <form th:action="@{'/recruiter/interviews/' + ${interview.id} + '/reject-candidate'}" method="post" onsubmit="return confirm('Are you sure you want to REJECT this candidate for the final hiring decision?');">
+                            <button type="submit" class="btn btn-outline-danger px-3">Reject Candidate</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${interview.finalDecision != null and interview.finalDecision.name() == 'SELECTED'}" class="p-3 rounded border border-success border-opacity-25 text-success d-flex align-items-center gap-2" style="background: rgba(15, 23, 42, 0.4);">
+                    <span class="fs-4">✓</span>
+                    <div>
+                        <strong>Candidate Selected!</strong> This candidate has been officially selected as the final hire for this position.
+                    </div>
+                </div>
+
+                <div th:if="${interview.finalDecision != null and interview.finalDecision.name() == 'REJECTED'}" class="p-3 rounded border border-danger border-opacity-25 text-danger d-flex align-items-center gap-2" style="background: rgba(15, 23, 42, 0.4);">
+                    <span class="fs-4">✕</span>
+                    <div>
+                        <strong>Candidate Rejected.</strong> The final hiring decision for this application is REJECTED.
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${interview.status.name() != 'COMPLETED' or interview.result == null or interview.result.name() != 'SELECTED'}" class="p-3 rounded border border-secondary border-opacity-25 text-secondary" style="background: rgba(15, 23, 42, 0.4);">
+                Final candidate selection is available after the interview status is <strong>COMPLETED</strong> and interview result is set to <strong>SELECTED</strong>.
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit / Reschedule Modal -->
+    <div class="modal fade" id="editInterviewModal" tabindex="-1" aria-labelledby="editInterviewModalLabel" aria-hidden="true" th:if="${interview != null}">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content text-white" style="background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px;">
+                <div class="modal-header border-bottom border-secondary border-opacity-25">
+                    <h5 class="modal-header-title fw-bold text-white mb-0" id="editInterviewModalLabel">Edit / Reschedule Interview</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{'/recruiter/interviews/' + ${interview.id} + '/update'}" th:object="${interviewRequest}" method="post">
+                    <div class="modal-body p-4">
+                        <input type="hidden" th:field="*{jobApplicationId}" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Round Name</label>
+                            <input type="text" class="form-control" th:field="*{roundName}" required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Interview Date</label>
+                                <input type="date" class="form-control" th:field="*{interviewDate}" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Interview Time</label>
+                                <input type="time" class="form-control" th:field="*{interviewTime}" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Interview Type</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="modalInterviewType" th:field="*{interviewType}" onchange="toggleModalInterviewTypeFields()" required>
+                                    <option value="ONLINE">ONLINE</option>
+                                    <option value="OFFLINE">OFFLINE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select bg-dark text-white border-secondary" th:field="*{status}">
+                                    <option value="SCHEDULED">SCHEDULED</option>
+                                    <option value="RESCHEDULED">RESCHEDULED</option>
+                                    <option value="COMPLETED">COMPLETED</option>
+                                    <option value="CANCELLED">CANCELLED</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="modalMeetingLinkGroup">
+                            <label class="form-label">Meeting Link (for ONLINE)</label>
+                            <input type="url" class="form-control" id="modalMeetingLink" th:field="*{meetingLink}" placeholder="https://meet.google.com/abc-defg-hij" />
+                        </div>
+
+                        <div class="mb-3" id="modalLocationGroup">
+                            <label class="form-label">Location (for OFFLINE)</label>
+                            <input type="text" class="form-control" id="modalLocation" th:field="*{location}" placeholder="e.g. Corporate Office, Room 402" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes / Instructions</label>
+                            <textarea class="form-control" th:field="*{notes}" rows="3" placeholder="Additional notes or topics for candidate..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary border-opacity-25">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary fw-bold">Save Changes / Reschedule</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic JS for Modal Type toggle -->
+    <script>
+        function toggleModalInterviewTypeFields() {
+            var typeSelect = document.getElementById('modalInterviewType');
+            var meetingLinkGroup = document.getElementById('modalMeetingLinkGroup');
+            var locationGroup = document.getElementById('modalLocationGroup');
+            var meetingLinkInput = document.getElementById('modalMeetingLink');
+            var locationInput = document.getElementById('modalLocation');
+
+            if (!typeSelect) return;
+
+            if (typeSelect.value === 'ONLINE') {
+                meetingLinkGroup.style.display = 'block';
+                locationGroup.style.display = 'none';
+                meetingLinkInput.setAttribute('required', 'required');
+                locationInput.removeAttribute('required');
+            } else if (typeSelect.value === 'OFFLINE') {
+                meetingLinkGroup.style.display = 'none';
+                locationGroup.style.display = 'block';
+                locationInput.setAttribute('required', 'required');
+                meetingLinkInput.removeAttribute('required');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', toggleModalInterviewTypeFields);
+    </script>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

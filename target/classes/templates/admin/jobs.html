@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Management - Admin Control Center</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/admin/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/students}">Students</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/recruiters}">Recruiters</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/admin/jobs}">Jobs</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/applications}">Applications</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/reports}">Reports</a></li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <span class="text-secondary me-2 d-block d-lg-inline">Welcome, <strong class="text-white" th:text="${fullName}">Admin</strong></span>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div>
+                            <h2 class="fw-bold mb-1 text-white">Job Postings Directory</h2>
+                            <p class="text-secondary mb-0">System-wide listing of job postings, status, and applicant pipeline metrics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter / Search Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card p-3">
+                    <form th:action="@{/admin/jobs}" method="get" class="row g-3 align-items-center">
+                        <div class="col-md-5">
+                            <input type="text" name="query" class="form-control" placeholder="Search by job title, company, or location..." th:value="${query}">
+                        </div>
+                        <div class="col-md-4">
+                            <select name="status" class="form-select bg-dark text-white border-secondary">
+                                <option value="">All Statuses</option>
+                                <option value="PUBLISHED" th:selected="${statusFilter == 'PUBLISHED'}">PUBLISHED</option>
+                                <option value="DRAFT" th:selected="${statusFilter == 'DRAFT'}">DRAFT</option>
+                                <option value="CLOSED" th:selected="${statusFilter == 'CLOSED'}">CLOSED</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">Filter</button>
+                            <a th:href="@{/admin/jobs}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <div th:if="${#lists.isEmpty(jobs)}" class="text-center py-4 text-secondary">
+                        <p class="mb-0">No job postings found matching criteria.</p>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(jobs)}" class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                            <thead>
+                                <tr class="text-secondary border-bottom">
+                                    <th>Job Title</th>
+                                    <th>Company</th>
+                                    <th>Recruiter</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Apps</th>
+                                    <th>Shortlisted</th>
+                                    <th>Interviews</th>
+                                    <th>Selected</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="job : ${jobs}">
+                                    <td>
+                                        <strong class="text-white d-block" th:text="${job.title}">Software Engineer</strong>
+                                        <small class="text-secondary" th:text="${job.jobType}">Full Time</small>
+                                    </td>
+                                    <td th:text="${job.companyName}">AI Solutions</td>
+                                    <td>
+                                        <span class="d-block text-white" th:text="${job.recruiterName}">Jane Doe</span>
+                                        <small class="text-secondary" th:text="${job.recruiterEmail}">recruiter@example.com</small>
+                                    </td>
+                                    <td th:text="${job.location}">Remote</td>
+                                    <td>
+                                        <span th:if="${job.status == 'PUBLISHED'}" class="badge bg-success">PUBLISHED</span>
+                                        <span th:if="${job.status == 'DRAFT'}" class="badge bg-warning text-dark">DRAFT</span>
+                                        <span th:if="${job.status == 'CLOSED'}" class="badge bg-danger">CLOSED</span>
+                                    </td>
+                                    <td th:text="${job.createdAt != null ? #temporals.format(job.createdAt, 'dd/MM/yyyy') : 'N/A'}">01/01/2026</td>
+                                    <td><span class="badge bg-primary" th:text="${job.applicationsCount}">0</span></td>
+                                    <td><span class="badge bg-info text-dark" th:text="${job.shortlistedCount}">0</span></td>
+                                    <td><span class="badge bg-warning text-dark" th:text="${job.interviewsCount}">0</span></td>
+                                    <td><span class="badge bg-success" th:text="${job.selectedCount}">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - AI Resume Screening & Smart Candidate Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/student/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/profile}">My Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/student/resume}">My Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/ats-analysis}">ATS Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/jobs}">Available Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/applications}">Job Applications</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <!-- Error Alert -->
+        <div th:if="${errorMessage}" class="alert alert-custom-error mb-4 alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}">Validation error occurred while uploading.</span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-card p-4 p-md-5">
+                    <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold mb-1" th:text="${currentResume == null} ? 'Upload Resume' : 'Replace Resume'">Upload Resume</h2>
+                            <p class="text-secondary mb-0">Select your CV or Resume document (PDF or DOCX format).</p>
+                        </div>
+                        <a th:href="@{/student/resume}" class="btn btn-secondary btn-sm">Cancel</a>
+                    </div>
+
+                    <div th:if="${currentResume != null}" class="alert alert-info bg-opacity-10 border-info text-info mb-4" role="alert">
+                        ℹ️ <strong>Note:</strong> Uploading a new file will set your current version to <strong>Version <span th:text="${currentResume.currentVersion + 1}">2</span></strong> while preserving your resume history.
+                    </div>
+
+                    <form th:action="@{/student/resume/upload}" method="post" enctype="multipart/form-data">
+                        
+                        <div class="mb-4">
+                            <label for="resumeFile" class="form-label fw-bold text-white">Select Resume File *</label>
+                            <input type="file" 
+                                   id="resumeFile" 
+                                   name="file" 
+                                   accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
+                                   class="form-control form-control-lg" 
+                                   required>
+                            <div class="form-text text-secondary mt-2">
+                                Supported formats: <strong class="text-white">PDF (.pdf)</strong> and <strong class="text-white">Word (.docx)</strong> only.<br>
+                                Maximum allowed file size: <strong class="text-white">10 MB</strong>.
+                            </div>
+                        </div>
+
+                        <div class="p-3 mb-4 rounded border border-secondary border-opacity-25" style="background: rgba(15, 23, 42, 0.4);">
+                            <h6 class="fw-bold text-white mb-2">🔒 File Security Checks</h6>
+                            <ul class="text-secondary small mb-0 ps-3">
+                                <li>Executable files (.exe, .bat, .sh) and archive formats (.zip, .rar) are strictly forbidden.</li>
+                                <li>Files are automatically assigned a secure UUID-based filename on the server.</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 pt-3 border-top border-secondary border-opacity-25">
+                            <a th:href="@{/student/resume}" class="btn btn-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold">Upload Resume</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.resume.screening.controller.AdminDashboardDiagnosticTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.24 s -- in com.resume.screening.controller.AdminDashboardDiagnosticTest

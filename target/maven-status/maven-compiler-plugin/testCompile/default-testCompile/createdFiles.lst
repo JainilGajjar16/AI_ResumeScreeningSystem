@@ -1,1 +1,16 @@
+com\resume\screening\service\Module7RecommendationAndShortlistTests.class
 com\resume\screening\ResumeScreeningApplicationTests.class
+com\resume\screening\controller\VerifyUrlTest.class
+com\resume\screening\service\Module8FinalCandidateSelectionTests.class
+com\resume\screening\parser\Module5ParsingTests.class
+com\resume\screening\service\BugReproductionTest.class
+com\resume\screening\service\StudentSkillPersistenceTests.class
+com\resume\screening\controller\ThymeleafApplicantsRenderingTest.class
+com\resume\screening\controller\Module8DetailsPageIntegrationTest.class
+com\resume\screening\analysis\Module6AnalysisTests.class
+com\resume\screening\resume\ResumeDeleteAndParsingTests.class
+com\resume\screening\security\DualLoginResolutionTests.class
+com\resume\screening\service\Module8InterviewFeedbackTests.class
+com\resume\screening\controller\Module8ShortlistedPageTest.class
+com\resume\screening\controller\RecruiterJobControllerTest.class
+com\resume\screening\service\Module8InterviewManagementTests.class

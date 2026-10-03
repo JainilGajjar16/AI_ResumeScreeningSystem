@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Analysis - AI Resume Screening System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg border-bottom" style="background: rgba(15, 23, 42, 0.6); border-color: rgba(255, 255, 255, 0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand text-uppercase fw-bold" th:href="@{/student/dashboard}">
+                <span class="gradient-text">AI Resume Screening</span>
+            </a>
+            <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/profile}">My Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/resume}">My Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/student/ats-analysis}">ATS Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/jobs}">Available Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/student/applications}">Job Applications</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link logout-link fw-bold" th:href="@{/logout}">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+
+        <!-- Success & Error Alerts -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <span th:text="${successMessage}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <span th:text="${errorMessage}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- PREREQUISITE STATE 1: NO RESUME UPLOADED -->
+        <div th:if="${hasResume != null and !hasResume}" class="glass-card p-5 text-center my-4">
+            <div class="fs-1 text-warning mb-3">📄</div>
+            <h3 class="fw-bold text-white mb-2">No Resume Uploaded</h3>
+            <p class="text-secondary mb-4 fs-5">Please upload your resume before running ATS analysis.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a th:href="@{/student/resume/upload}" class="btn btn-primary btn-lg px-4">Upload Resume Now</a>
+                <a th:href="@{/student/resume}" class="btn btn-outline-light btn-lg px-4">My Resume</a>
+            </div>
+        </div>
+
+        <!-- PREREQUISITE STATE 2: RESUME NOT PARSED -->
+        <div th:if="${isParsed != null and !isParsed and (hasResume == null or hasResume)}" class="glass-card p-5 text-center my-4">
+            <div class="fs-1 text-info mb-3">🔍</div>
+            <h3 class="fw-bold text-white mb-2">Resume Not Parsed Yet</h3>
+            <p class="text-secondary mb-4 fs-5">Please parse your resume before running ATS analysis.</p>
+            <div class="d-flex justify-content-center gap-3 align-items-center">
+                <form th:if="${currentResume != null}" th:action="@{/student/resume/{id}/parse(id=${currentResume.id})}" method="post">
+                    <button type="submit" class="btn btn-primary btn-lg px-4">Parse Resume Now</button>
+                </form>
+                <a th:href="@{/student/resume}" class="btn btn-outline-light btn-lg px-4">View Resume Page</a>
+            </div>
+        </div>
+
+        <!-- PREREQUISITE STATE 3: RESUME PARSED BUT NO JOB SELECTED -->
+        <div th:if="${(hasResume == null or hasResume) and (isParsed == null or isParsed) and job == null}">
+            <div class="mb-4">
+                <h2 class="fw-bold text-white mb-1">Select a Published Job for ATS Analysis</h2>
+                <p class="text-secondary mb-0">Choose an active job posting below to evaluate your resume compatibility against the job requirements.</p>
+            </div>
+
+            <div th:if="${#lists.isEmpty(publishedJobs)}" class="glass-card p-5 text-center">
+                <h4 class="text-white mb-2">No Active Published Jobs</h4>
+                <p class="text-secondary mb-0">There are currently no active published job postings available for analysis. Please check back later!</p>
+            </div>
+
+            <div th:if="${!#lists.isEmpty(publishedJobs)}" class="row g-4">
+                <div th:each="j : ${publishedJobs}" class="col-lg-6">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 class="fw-bold text-white mb-0" th:text="${j.title}">Job Title</h4>
+                                <span class="badge bg-primary" th:text="${j.jobType}">Full Time</span>
+                            </div>
+                            <h6 class="text-accent mb-3" th:text="${j.companyName}">Company Name</h6>
+                            <div class="row text-secondary small mb-3">
+                                <div class="col-6 mb-2">📍 Location: <strong class="text-white" th:text="${j.location}">Location</strong></div>
+                                <div class="col-6 mb-2">🎓 Qualification: <strong class="text-white" th:text="${j.qualification}">Qualification</strong></div>
+                                <div class="col-6 mb-2">📅 Deadline: <strong class="text-white" th:text="${j.formattedDeadline}">Deadline</strong></div>
+                            </div>
+                            <div class="mb-3" th:if="${j.requiredSkills != null and !#strings.isEmpty(j.requiredSkills)}">
+                                <span class="text-secondary small d-block mb-1">Required Skills:</span>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <span th:each="sk : ${#strings.arraySplit(j.requiredSkills, ',')}" class="badge bg-secondary text-white" th:text="${#strings.trim(sk)}">Skill</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-top border-secondary border-opacity-25 pt-3 mt-3 d-flex justify-content-end">
+                            <a th:href="@{/student/ats-analysis(jobId=${j.id})}" class="btn btn-primary btn-sm px-4">Select for ATS Analysis</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PREREQUISITE STATE 4: JOB SELECTED BUT ANALYSIS NOT GENERATED YET -->
+        <div th:if="${(hasResume == null or hasResume) and (isParsed == null or isParsed) and job != null and analysis == null}">
+            <div class="mb-3">
+                <a th:href="@{/student/ats-analysis}" class="text-secondary text-decoration-none">← Select Different Job</a>
+            </div>
+
+            <div class="glass-card p-5 mb-4 text-center">
+                <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                    <h2 class="fw-bold text-white mb-0" th:text="${job.title}">Job Title</h2>
+                    <span class="badge bg-primary" th:text="${job.jobType}">Full Time</span>
+                </div>
+                <h4 class="text-accent mb-4" th:text="${job.companyName}">Company Name</h4>
+                <p class="text-secondary max-w-2xl mx-auto mb-4">
+                    Ready to analyze your current uploaded resume against this job post using our Module 6 AI & ATS Screening Engine.
+                </p>
+
+                <form th:if="${currentResume != null}" th:action="@{/student/resume/{resumeId}/analyze/{jobId}(resumeId=${currentResume.id}, jobId=${job.id})}" method="post">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 py-3 fw-bold">Analyze ATS Match</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- STATE 5: ANALYSIS COMPLETE & AVAILABLE -->
+        <div th:if="${(hasResume == null or hasResume) and (isParsed == null or isParsed) and analysis != null}">
+
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <a th:href="@{/student/ats-analysis}" class="text-secondary text-decoration-none">← Select Different Job</a>
+                <a th:if="${job != null}" th:href="@{/student/jobs/{id}(id=${job.id})}" class="text-secondary text-decoration-none">View Job Details →</a>
+            </div>
+
+            <!-- Main Header Card -->
+            <div class="glass-card p-4 mb-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h2 class="fw-bold text-white mb-0">ATS Compatibility Report</h2>
+                            <span class="badge bg-secondary" th:text="${'Resume v' + analysis.resumeVersionNumber}">Resume v1</span>
+                        </div>
+                        <p class="text-secondary mb-0">
+                            Evaluated for target role: <strong class="text-accent" th:text="${analysis.jobTitle}">Job Title</strong> at <span th:text="${analysis.companyName}">Company</span>
+                            &nbsp;|&nbsp; Analyzed on <span class="text-white" th:text="${analysis.analyzedAtFormatted}">19/08/2026 20:00</span>
+                        </p>
+                    </div>
+                    <div class="mt-3 mt-md-0 d-flex gap-2">
+                        <form th:action="@{/student/resume/{resumeId}/analyze/{jobId}(resumeId=${analysis.resumeId}, jobId=${analysis.jobId})}" method="post">
+                            <button type="submit" class="btn btn-outline-accent btn-sm">Re-Analyze Resume</button>
+                        </form>
+                        <a th:href="@{/student/jobs/{id}(id=${analysis.jobId})}" class="btn btn-outline-light btn-sm">View Job</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Dashboard Cards -->
+            <div class="row g-3 mb-4">
+
+                <!-- ATS Score Card -->
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="glass-card p-3 text-center h-100 border-accent">
+                        <small class="text-secondary d-block mb-1">ATS Score</small>
+                        <h2 class="fw-bold text-accent mb-0" th:text="${#numbers.formatDecimal(analysis.atsScore != null ? analysis.atsScore : 0.0, 1, 1) + '%'}">82%</h2>
+                        <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar bg-accent" role="progressbar" th:style="'width: ' + ${analysis.atsScore != null ? analysis.atsScore : 0.0} + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Match Card -->
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="glass-card p-3 text-center h-100">
+                        <small class="text-secondary d-block mb-1">Skill Match</small>
+                        <h2 class="fw-bold text-info mb-0" th:text="${#numbers.formatDecimal(analysis.skillMatchPercentage != null ? analysis.skillMatchPercentage : 0.0, 1, 1) + '%'}">80%</h2>
+                        <small class="text-secondary" th:text="${(analysis.matchedSkills != null ? (analysis.matchedSkills instanceof T(java.lang.String) ? #arrays.length(#strings.arraySplit(analysis.matchedSkills, ',')) : #lists.size(analysis.matchedSkills)) : 0) + ' Matched'}">4 Matched</small>
+                    </div>
+                </div>
+
+                <!-- Qualification Card -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="glass-card p-3 text-center h-100">
+                        <small class="text-secondary d-block mb-1">Qualification Match</small>
+                        <div class="mt-1">
+                            <span th:if="${analysis.qualificationMatch == 'MATCH'}" class="badge bg-success fs-6 px-3 py-2">MATCH</span>
+                            <span th:if="${analysis.qualificationMatch == 'PARTIAL_MATCH'}" class="badge bg-warning text-dark fs-6 px-3 py-2">PARTIAL MATCH</span>
+                            <span th:if="${analysis.qualificationMatch == 'NO_MATCH'}" class="badge bg-danger fs-6 px-3 py-2">NO MATCH</span>
+                            <span th:if="${analysis.qualificationMatch == 'NOT_AVAILABLE'}" class="badge bg-secondary fs-6 px-3 py-2">N/A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience Card -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="glass-card p-3 text-center h-100">
+                        <small class="text-secondary d-block mb-1">Experience Match</small>
+                        <div class="mt-1">
+                            <span th:if="${analysis.experienceMatch == 'MATCH'}" class="badge bg-success fs-6 px-3 py-2">MATCH</span>
+                            <span th:if="${analysis.experienceMatch == 'PARTIAL_MATCH'}" class="badge bg-warning text-dark fs-6 px-3 py-2">PARTIAL MATCH</span>
+                            <span th:if="${analysis.experienceMatch == 'NO_MATCH'}" class="badge bg-danger fs-6 px-3 py-2">NO MATCH</span>
+                            <span th:if="${analysis.experienceMatch == 'NOT_AVAILABLE'}" class="badge bg-secondary fs-6 px-3 py-2">N/A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completeness Card -->
+                <div class="col-12 col-md-4 col-lg-2">
+                    <div class="glass-card p-3 text-center h-100">
+                        <small class="text-secondary d-block mb-1">Completeness</small>
+                        <h2 class="fw-bold text-success mb-0" th:text="${#numbers.formatDecimal(analysis.resumeCompletenessScore != null ? analysis.resumeCompletenessScore : 0.0, 1, 1) + ' / 10'}">9 / 10</h2>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Transparent Score Breakdown Table -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3">Score Breakdown & Explanation</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-borderless align-middle mb-0" style="background: transparent;">
+                        <thead>
+                            <tr class="text-secondary border-bottom">
+                                <th>Component</th>
+                                <th>Weight</th>
+                                <th>Score Contribution</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-white">Technical Skills Match</td>
+                                <td class="text-secondary">50%</td>
+                                <td><strong class="text-accent" th:text="${#numbers.formatDecimal(analysis.skillsMatchScore != null ? analysis.skillsMatchScore : 0.0, 1, 1) + ' / 50.0'}">40.0 / 50.0</strong></td>
+                                <td><span class="text-info" th:text="${#numbers.formatDecimal(analysis.skillMatchPercentage != null ? analysis.skillMatchPercentage : 0.0, 1, 1) + '% skill alignment'}">80% skill alignment</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-white">Work Experience Match</td>
+                                <td class="text-secondary">20%</td>
+                                <td><strong class="text-accent" th:text="${#numbers.formatDecimal(analysis.experienceScore != null ? analysis.experienceScore : 0.0, 1, 1) + ' / 20.0'}">15.0 / 20.0</strong></td>
+                                <td><span class="text-secondary" th:text="${analysis.experienceMatch}">MATCH</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-white">Educational Qualification</td>
+                                <td class="text-secondary">15%</td>
+                                <td><strong class="text-accent" th:text="${#numbers.formatDecimal(analysis.qualificationScore != null ? analysis.qualificationScore : 0.0, 1, 1) + ' / 15.0'}">15.0 / 15.0</strong></td>
+                                <td><span class="text-secondary" th:text="${analysis.qualificationMatch}">MATCH</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-white">Resume Completeness</td>
+                                <td class="text-secondary">10%</td>
+                                <td><strong class="text-accent" th:text="${#numbers.formatDecimal(analysis.resumeCompletenessScore != null ? analysis.resumeCompletenessScore : 0.0, 1, 1) + ' / 10.0'}">9.0 / 10.0</strong></td>
+                                <td><span class="text-secondary">Structural sections evaluation</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-white">Keyword / Requirement Match</td>
+                                <td class="text-secondary">5%</td>
+                                <td><strong class="text-accent" th:text="${#numbers.formatDecimal(analysis.keywordMatchScore != null ? analysis.keywordMatchScore : 0.0, 1, 1) + ' / 5.0'}">4.0 / 5.0</strong></td>
+                                <td><span class="text-secondary">Job keyword presence</span></td>
+                            </tr>
+                            <tr class="border-top border-secondary">
+                                <td><strong class="text-white fs-6">Total ATS Compatibility Score</strong></td>
+                                <td class="text-secondary">100%</td>
+                                <td><strong class="text-accent fs-5" th:text="${#numbers.formatDecimal(analysis.atsScore != null ? analysis.atsScore : 0.0, 1, 1) + ' / 100.0'}">82.0 / 100.0</strong></td>
+                                <td><span class="badge bg-primary fs-6" th:text="${analysis.atsScore != null ? (analysis.atsScore >= 75 ? 'Excellent Match' : (analysis.atsScore >= 50 ? 'Good Match' : 'Requires Improvement')) : 'N/A'}">Excellent Match</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Skills Comparison Grid -->
+            <div class="row g-4 mb-4">
+
+                <!-- Matched Skills -->
+                <div class="col-md-6">
+                    <div class="glass-card p-4 h-100">
+                        <h5 class="fw-bold text-success mb-3">✓ Skills Matched in Your Resume (<span th:text="${analysis.matchedSkills != null ? (analysis.matchedSkills instanceof T(java.lang.String) ? #arrays.length(#strings.arraySplit(analysis.matchedSkills, ',')) : #lists.size(analysis.matchedSkills)) : 0}">0</span>)</h5>
+                        <div th:if="${analysis.matchedSkills == null or (analysis.matchedSkills instanceof T(java.lang.String) ? #strings.isEmpty(analysis.matchedSkills) : #lists.isEmpty(analysis.matchedSkills))}" class="text-secondary">
+                            No direct skill matches detected for this role.
+                        </div>
+                        <div th:if="${analysis.matchedSkills != null and (analysis.matchedSkills instanceof T(java.lang.String) ? !#strings.isEmpty(analysis.matchedSkills) : !#lists.isEmpty(analysis.matchedSkills))}" class="d-flex flex-wrap gap-2">
+                            <span th:each="sk : ${(analysis.matchedSkills instanceof T(java.lang.String)) ? #strings.arraySplit(analysis.matchedSkills, ',') : analysis.matchedSkills}"
+                                  class="badge px-3 py-2 fs-6 fw-semibold"
+                                  style="background-color: rgba(16, 185, 129, 0.2) !important; color: #4ade80 !important; border: 1px solid rgba(16, 185, 129, 0.5) !important;"
+                                  th:text="${#strings.trim(sk)}">Java</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Skills -->
+                <div class="col-md-6">
+                    <div class="glass-card p-4 h-100">
+                        <h5 class="fw-bold text-danger mb-3">✗ Missing Skills for This Job (<span th:text="${analysis.missingSkills != null ? (analysis.missingSkills instanceof T(java.lang.String) ? #arrays.length(#strings.arraySplit(analysis.missingSkills, ',')) : #lists.size(analysis.missingSkills)) : 0}">0</span>)</h5>
+                        <div th:if="${analysis.missingSkills == null or (analysis.missingSkills instanceof T(java.lang.String) ? #strings.isEmpty(analysis.missingSkills) : #lists.isEmpty(analysis.missingSkills))}" class="text-success">
+                            Great job! You possess all the required skills listed for this job.
+                        </div>
+                        <div th:if="${analysis.missingSkills != null and (analysis.missingSkills instanceof T(java.lang.String) ? !#strings.isEmpty(analysis.missingSkills) : !#lists.isEmpty(analysis.missingSkills))}" class="d-flex flex-wrap gap-2">
+                            <span th:each="sk : ${(analysis.missingSkills instanceof T(java.lang.String)) ? #strings.arraySplit(analysis.missingSkills, ',') : analysis.missingSkills}"
+                                  class="badge px-3 py-2 fs-6 fw-semibold"
+                                  style="background-color: rgba(239, 68, 68, 0.18) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.45) !important;">
+                                ✗ <span th:text="${#strings.trim(sk)}">AWS</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Strengths & Suggestions -->
+            <div class="row g-4 mb-4">
+
+                <!-- Strengths -->
+                <div class="col-md-6">
+                    <div class="glass-card p-4 h-100">
+                        <h5 class="fw-bold text-white mb-3">Your Resume Strengths</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li th:each="str : ${analysis.strengths}" class="mb-2 text-light d-flex align-items-start gap-2">
+                                <span class="text-accent font-monospace">▶</span>
+                                <span th:text="${str}">Strength item</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Suggestions -->
+                <div class="col-md-6">
+                    <div class="glass-card p-4 h-100 border-warning">
+                        <h5 class="fw-bold text-warning mb-2">💡 Ways to Improve Your Resume</h5>
+                        <p class="text-secondary small mb-3">
+                            <strong class="text-white">Important Notice:</strong> Only add skills or technologies to your resume if you genuinely have hands-on experience or proficiency with them.
+                        </p>
+                        <ul class="list-unstyled mb-0">
+                            <li th:each="sug : ${analysis.suggestions}" class="mb-2 text-light d-flex align-items-start gap-2">
+                                <span class="text-warning">•</span>
+                                <span th:text="${sug}">Suggestion item</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Student Profile Links Status -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-white mb-3">Profile Link Verification</h5>
+                <div class="d-flex gap-3 align-items-center">
+                    <div th:if="${analysis.hasGithub}">
+                        <a th:href="${analysis.githubUrl}" target="_blank" class="btn btn-outline-light">
+                            GitHub Profile: <span class="text-accent font-monospace" th:text="${analysis.githubUrl}">https://github.com/...</span>
+                        </a>
+                    </div>
+                    <div th:if="${!analysis.hasGithub}" class="text-secondary small">
+                        GitHub Profile: <span class="badge bg-secondary">Not Linked</span> (Add link in Profile to showcase your code)
+                    </div>
+
+                    <div th:if="${analysis.hasLinkedin}">
+                        <a th:href="${analysis.linkedinUrl}" target="_blank" class="btn btn-outline-primary">
+                            LinkedIn Profile: <span class="font-monospace" th:text="${analysis.linkedinUrl}">https://linkedin.com/...</span>
+                        </a>
+                    </div>
+                    <div th:if="${!analysis.hasLinkedin}" class="text-secondary small">
+                        LinkedIn Profile: <span class="badge bg-secondary">Not Linked</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

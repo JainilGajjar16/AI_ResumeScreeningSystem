@@ -1,0 +1,24 @@
+feature,importance,category
+tfidf_cosine_similarity,0.17897477902157097,TF-IDF Text Similarity
+skill_coverage_ratio,0.15396181569930095,Skill Overlap Metrics
+matching_skill_count,0.1183891079826983,Skill Overlap Metrics
+skill_jaccard_similarity,0.11808674774191251,Skill Overlap Metrics
+word_count_ratio,0.10276605792953003,Text Length Ratios
+missing_skill_count,0.07529516308084995,Skill Overlap Metrics
+resume_has_projects,0.0439727518171196,Section Structure Flags
+resume_word_count,0.04216218283051529,Text Length Ratios
+resume_char_count,0.04116673707321612,Text Length Ratios
+resume_skill_count,0.030817136516750353,Skill Overlap Metrics
+job_char_count,0.02046839100650574,Text Length Ratios
+job_word_count,0.02041201486672049,Text Length Ratios
+job_skill_count,0.014778890885802311,Skill Overlap Metrics
+resume_has_experience,0.009683487733609664,Section Structure Flags
+section_match_score,0.009154109307009065,Section Structure Flags
+resume_has_skills,0.008390159784096442,Skill Overlap Metrics
+job_has_experience,0.007643322551086122,Section Structure Flags
+job_has_skills,0.003877144171706013,Skill Overlap Metrics
+resume_has_education,0.0,Section Structure Flags
+job_has_projects,0.0,Section Structure Flags
+job_has_education,0.0,Section Structure Flags
+resume_has_certifications,0.0,Section Structure Flags
+job_has_certifications,0.0,Section Structure Flags

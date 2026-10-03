@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "student_profiles")
@@ -29,6 +30,24 @@ public class StudentProfile {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "dob")
+    private LocalDate dob;
+
+    @Column(length = 150)
+    private String college;
+
+    @Column(length = 100)
+    private String degree;
+
+    @Column(length = 100)
+    private String branch;
+
+    @Column(name = "semester")
+    private Integer semester;
+
+    @Column(name = "cgpa")
+    private Double cgpa;
+
     @Column(name = "github_url")
     private String githubUrl;
 
@@ -37,6 +56,9 @@ public class StudentProfile {
 
     @Column(columnDefinition = "TEXT")
     private String summary;
+
+    @Column(name = "skills_text", columnDefinition = "TEXT")
+    private String skillsText;
 
     @Column(columnDefinition = "TEXT")
     private String education;

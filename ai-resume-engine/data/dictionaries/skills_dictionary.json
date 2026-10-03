@@ -1,0 +1,23 @@
+{
+  "technical_skills": [
+    "Java", "Spring Boot", "Spring MVC", "Hibernate", "Microservices", "REST API",
+    "Python", "Django", "Flask", "FastAPI", "Pandas", "NumPy", "Scikit-Learn", "TensorFlow", "PyTorch",
+    "JavaScript", "TypeScript", "React", "React.js", "Node.js", "Express.js", "Vue.js", "Angular", "HTML5", "CSS3",
+    "C", "C++", "C#", ".NET", ".NET Core",
+    "SQL", "MySQL", "PostgreSQL", "Oracle", "MongoDB", "Redis",
+    "AWS", "Azure", "GCP", "Docker", "Kubernetes", "CI/CD", "Jenkins", "Git", "Linux",
+    "QA", "Selenium", "JUnit", "Mockito", "Postman", "Jira"
+  ],
+  "token_preservation_regex": {
+    "c++": "TOKEN_CPP",
+    "c#": "TOKEN_CSHARP",
+    ".net": "TOKEN_DOTNET",
+    ".net core": "TOKEN_DOTNETCORE",
+    "node.js": "TOKEN_NODEJS",
+    "react.js": "TOKEN_REACTJS",
+    "vue.js": "TOKEN_VUEJS",
+    "spring boot": "TOKEN_SPRINGBOOT",
+    "rest api": "TOKEN_RESTAPI",
+    "ci/cd": "TOKEN_CICD"
+  }
+}
